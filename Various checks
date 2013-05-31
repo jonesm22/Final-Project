@@ -17,6 +17,8 @@ if test == True:
 else: 
     print "can not be carried out in the Primal Tableaux"
     
+##################################################################
+    
     
     #This tests if the initial tableaux if feasible in the Dual. 
 
@@ -35,7 +37,7 @@ if test == True:
 else:
     print "cannot be carried out in the Dual Tableaux"
     
-    
+############################################################################   
     
     
 # test in Primal Tableaux to see if we are done pivoting
@@ -52,7 +54,7 @@ if test == True:
 else:
     print "keep going... ;)"
     
-    
+############################################################################      
     
  #test for primal feasibility during the iteration process
 
