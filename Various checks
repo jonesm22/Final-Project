@@ -1,0 +1,68 @@
+# this tests if the initial primal tableaux is feasible. 
+
+import numpy as np
+
+test = True
+while (test == True):
+    for i in b:
+        if i >= 0:               #if b is all positive we can proceed with Primal simplex
+            test = True
+        else: 
+            test = False
+            break 
+    break
+ 
+if test == True:
+    print "can be carried out in the Primal Tableaux"
+else: 
+    print "can not be carried out in the Primal Tableaux"
+    
+    
+    #This tests if the initial tableaux if feasible in the Dual. 
+
+test2 = True
+while (test2 == True):
+    for i in c:
+        if i < 0:                  #if last row is all negative we can proceed with  
+            test = True            #Dual simplex
+        else: 
+            test = False
+            break
+    break
+    
+if test == True:
+    print "can be carried out in the Dual Tableaux"
+else:
+    print "cannot be carried out in the Dual Tableaux"
+    
+    
+    
+    
+# test in Primal Tableaux to see if we are done pivoting
+
+test = True
+while test==True:
+    for i in final[(len(list(final))-1)]:
+        if i < 0:                            # if last row is all negative we are done
+            test=True
+        else:
+            test=False                       # else we keep going 
+if test == True:
+    print "Finished with Simplex method"
+else:
+    print "keep going... ;)"
+    
+    
+    
+ #test for primal feasibility during the iteration process
+
+test=True
+while test==True:
+    for i in final[(len(list(final))-1)]:
+        if i < 0:                            #if any of the numbers are neg. stop everything
+            true = False                     #and conclude unfeasibility
+            print "Infeasible :("
+        else: 
+            print "you may proceed, tableaux is still feasible"
+            break
+    break
