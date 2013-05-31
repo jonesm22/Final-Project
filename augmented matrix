@@ -8,7 +8,7 @@
 import numpy as np
 
 A =Matrix([[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4]])   # These are the example matrices 
-b = [1,2,3,4]
+constraints = [1,2,3,4]
 c = Matrix([[1,2,3,4]])
 
 Matrix(A) 
@@ -19,10 +19,10 @@ I = Matrix(np.eye(len(list(A))))   #creates the identity matrix based on the siz
 czero = Matrix(np.zeros(shape=(1,len(list(c[0])))))  #creates/adds the additional zeros for the c row
 c = c.augment(czero)
 
-b.append(0)     #creates/adds/transposes the b matrix in prep for augmenting
-b = Matrix(b).T
+constraints.append(0)     #creates/adds/transposes the b matrix in prep for augmenting
+constraints = Matrix(constraints).T
 
 body = A.augment(I)   #augments the identity with A
 body = body.stack(c)   #augments A|I with c along the bottom
-final = body.augment(b)  #augments the body with b transposed. 
-final
+initialT = body.augment(constraints)  #augments the body with b transposed. 
+initialT
