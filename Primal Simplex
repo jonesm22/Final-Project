@@ -35,17 +35,16 @@ initialT
 
                     #assign variable for number of rows  of tableau matrix
                     #assign variable for number of columns of tableau matrix
-m = final.nrows()
-n = final.ncols()
-m
-n
+m = initialT.nrows()
+n = initialT.ncols()
+
 
 #######################################
 
 %auto
 #choose pivot column based on Bland's rule of choosing left most positive value of c
 for i in range(0,n):
-    if final[m-1, i] > 0:
+    if initialT[m-1, i] > 0:
         pivotcolindex = i
         break
     else:
@@ -58,18 +57,18 @@ pivotcolindex       #index of pivot column
 #choose pivot row based on ratios
 
 #pull out column of index 8
-def column(final, i):
-    return [row[i] for row in final]
+def column(initialT, i):
+    return [row[i] for row in initialT]
 
-pivotcol = column(final, 0) #extract the pivotcol
-constraintcol = column(final, 8)     #extract the bcol
+pivotcol = column(initialT, 0) #extract the pivotcol
+constraintcol = column(initialT, 8)     #extract the bcol
 
 pivotcol
 constraintcol
 
 #Note, this ratio portion needs some help on eliminating ratios that are not allowed
 ratios = []                        #calculate ratios
-for i in range((len(bcol)-1)):     #only calculate ratios for non-objective rows
+for i in range((len(constraintcol)-1)):     #only calculate ratios for non-objective rows
     ratio = constraintcol[i]/pivotcol[i]
     ratios.append(ratio)
 print "ratios are: " + str(ratios)
@@ -145,7 +144,7 @@ G
 
 ################################################
 
-#Now multiply Gaussian matrix by initialT to get the pivoted tableau
+#Now multiply Gaussian matrix by [a, alpha, b] to get the pivoted tableau
 
 #we don't actually need this, but left it in if we need for the tutorial output
 if len(a) == 0:                                 #rebuilds the pivot column as a matrix, and takes into consideration when a and b are the empty vectors
