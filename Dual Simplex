@@ -1,0 +1,158 @@
+#Melissa's code for building initial tableau
+#This chunk of code should take the arrays, A, b, c that garys code outputs, or will output
+# and turn it into one large augmented matrix.
+# I've tested it on a couple different matrices for A, b, c but feel free to try more and let me know
+# if anything is wrong. I assumed that A,b,c are arrays. Which is good, since I want to augment a 0
+# at the end b. Either way, if gary outputs matrices, I can change my code pretty easily.
+%auto
+
+import numpy as np
+
+A = Matrix([[-1, -1, 2],[-4, -2, 1],[1, 1, -4]])   # These are the example matrices
+constraint = [-3, -4, 2]
+c = Matrix([[-4, -2, -1]])
+
+
+I = Matrix(np.eye(len(list(A))))   #creates the identity matrix based on the size of A
+
+czero = Matrix(np.zeros(shape=(1,len(list(c[0])))))  #creates/adds the additional zeros for the c row
+c = c.augment(czero)
+
+constraint.append(0)     #creates/adds/transposes the b matrix in prep for augmenting
+constraint = Matrix(constraint).T
+
+body = A.augment(I)   #augments the identity with A
+body = body.stack(c)   #augments A|I with c along the bottom
+tableaux = body.augment(constraint)  #augments the body with b transposed.
+tableaux
+
+=======================================================================
+
+#The following code conducts the Simplex Algorithm for the dual.
+
+%auto
+#Determine how many rows and how many columns the initial tableau has
+
+m = tableaux.nrows()    #assign variable for number of rows  of tableau matrix
+n = tableaux.ncols()    #assign variable for number of columns of tableau matrix
+m
+n
+
+======================================================================
+
+%auto
+#choose pivot row based on largest negative of constraint column
+pivotrowindex = 0
+largestnegative = 10^10                        #just put an arbitrarily high number to make the checks work. Assumes all constraints are less than 10^10
+for i in range(0,m):
+    if tableaux[i, n-1] < 0:
+        if abs(tableaux[i, n-1]) < largestnegative:
+               largestnegative = abs(tableaux[i, n-1])
+               pivotrowindex = i
+    else:
+        i += 1
+pivotrowindex       #index of pivot row
+largestnegative
+
+=======================================================================
+
+%auto
+#Now that we have pivot row, find pivot column based on ratios.
+
+pivotrow = list(tableaux[pivotrowindex])
+objectiverow = list(tableaux[m-1])
+
+pivotrow
+objectiverow
+
+#Note, this ratio portion needs some help on eliminating ratios that are not allowed
+ratios = []                        #calculate ratios
+for i in range((n-2)):                 #only calculate ratios for non-objective rows
+     if pivotrow[i] != 0:
+         ratio = objectiverow[i]/pivotrow[i]
+         if ratio > 0:
+            ratios.append(ratio)
+print "ratios are: " + str(ratios)
+
+pivotcolindex = ratios.index(min(ratios))          #find index of the minimum ratio. This is our row
+print "index of pivotrow: " + str(pivotrowindex)
+print "index of pivotcol: " + str(pivotcolindex)
+
+========================================================================
+
+pivotcol = list(tableaux[:,pivotcolindex])
+print pivotcol
+
+======================================================================
+
+%auto
+#Now that we have the pivot row and pivot column indeces, we can implement Gaussian elimination.
+pivotcol = list(tableaux[:,pivotcolindex])
+print "Pivot column is: " + str(pivotcol)
+
+#Find a, alpha, b
+a = pivotcol[:pivotrowindex]            #define values above pivot point, alpha
+alpha = pivotcol[pivotrowindex]         #define alpha
+alpha = alpha[0]                        #makes alpha an integer
+b = pivotcol[pivotrowindex+1:]          #define values below pivot point, alpha
+print "a: " + str(a)
+print "alpha: " + str(alpha)
+print "b: " + str(b)
+
+=====================================================================
+
+#Building the Gaussian matrix
+aM = Matrix(a)                                   #turns a into a matrix for future augmenting
+
+if len(b) != 0:                                         #created if statement to account for when b is the empty vector because changes the structure of G
+    I_s = Matrix(identity_matrix(len(a)))               #creates matrix of zeros
+    alphaa = (-alpha**-1)*aM
+    szeros = Matrix(np.zeros(shape=(len(a), 1)))
+
+    toprow = I_s.augment(alphaa.augment(szeros))
+else:
+    I_s = Matrix(identity_matrix(len(a)))               #creates matrix of zeros
+    alphaa = (-alpha**-1)*aM
+
+    toprow = I_s.augment(alphaa.augment(szeros))
+
+#building middle row of G
+center = [alpha**-1]
+centerM = Matrix(1, 1, [center])
+middlezerosL = Matrix(np.zeros(shape=(1, len(a))))
+middlezerosR = Matrix(np.zeros(shape=(1, len(b))))
+
+middlerow = middlezerosL.augment(centerM.augment(middlezerosR))
+
+#building bottom row of G
+bM = Matrix(b)                                          #changes b from a list to a matrix to augment into bottomrow
+
+
+if len(a) != 0:                                         #created if statement to account for when a is the empty vector because changes G's structure
+    tzeros = Matrix(np.zeros(shape=(len(b), 1)))        #build zero matrix
+    alphab = (-alpha**-1)*bM                            #builds alpha matrix
+    I_t = Matrix(identity_matrix(len(b)))               #builds identity matrix (t X t)
+
+    bottomrow = tzeros.augment(alphab.augment(I_t))     #augments to build bottom row of G
+else:
+    alphab = (-alpha**-1)*bM                            #builds alpha matrix
+    I_t = Matrix(identity_matrix(len(b)))               #builds identity matrix (t X t)
+
+    bottomrow = alphab.augment(I_t)                     #augments to build bottom row of G
+
+if len(a) == 0:                                         #Changes the structure of G depending if a or b are the empty vector
+    G = middlerow.stack(bottomrow)
+elif len(b)== 0:
+    G = toprow.stack(middlerow)
+else:
+    G = toprow.stack(middlerow.stack(bottomrow))
+print "Gaussian elimination matrix: "
+G
+
+===========================================================
+
+tableaux = G*tableaux                       #Finds the next Tableau
+print "This is the next tableau: "
+tableaux
+
+========================================================
