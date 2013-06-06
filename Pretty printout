@@ -1,0 +1,17 @@
+︠
+########for the iterations
+c=initialT[(m-1),:]
+show("A\ feasible\ solution\ of\ the\ feasible\ Dual\ is:")
+for i in range(A.nrows()):
+    y = c[:,A.ncols()+i]
+    show("y" + str(i) + " = " + str(y))
+show("The\ objective\ value\ of\ the\ feasible\ Dual\ is:")
+show((initialT[(m-1),(n-1)])*(-1))
+
+#######for the final tableaux
+show("The\ optimal\ solution\ to\ the\ Dual\ is:")
+for i in range(A.nrows()):
+    y = c[:,A.ncols()+i]
+    show("y" + str(i) + " = " + str(y))
+show("The\ minimum\ objective\ value\ of\ the\ Dual\ is:")
+show((initialT[(m-1),(n-1)])*(-1))
