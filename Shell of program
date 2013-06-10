@@ -1,0 +1,96 @@
+####Gary's input####
+####My input for Tableaux creation####
+######################################
+m = tableaux.nrows()
+n = tableaux.ncols()
+import numpy as np      ####Test to see if Tableaux is Primal Feasible
+
+
+testP = True
+while (testP == True):
+    for i in b:
+        if i >= 0:               #if b is all positive we can proceed with Primal simplex
+            test = True
+        else:
+            testP = False
+            break
+    break
+
+######################################
+
+testD = True           ####Test to see if tableaux is Dual Feasible
+while (testD == True):
+    for i in c:
+        if i < 0:                #if last row is all negative we can proceed with Dual Simplex
+            testD = True
+        else:
+            testD = False
+            break
+    break
+
+######################################
+############Brian's Graph output goes here################
+if testP == False and testD == False:
+    print "The linear program is not bounded. We are done." #######Check to make sure this is correct!#####
+
+if testP == True:
+        testdone = False
+        while testdone == False:
+            ##########Andrea's code goes here, which included brians code for printing in Latex##########
+            test=True
+            while test==True:                             #### testing for feasiblility in each loopity in each loop
+                for i in tableaux[(n-1)]:                 #if all the numbers in the last col are + we are good
+                    if i >= 0:
+                        true = True
+                    else:
+                        test = False
+                        break
+                break
+            if test == False:
+                print "The Linear program is no longer feasible in the Primal Tableaux"#See if there are any other concl.
+                break
+            while testdone==False:
+                for i in tableaux[(m-1)]:                #### testing to see if we are finished or not
+                    if i <= 0:                            # if last row is all negative we are done
+                        testdone=True
+                    else:
+                        testdone=False
+                        break
+            break
+            if testdone == True:
+                #### (Brian) print optimal information in Latex form#####
+                break
+elif testD == True:
+    testdone = False
+    while testdone = False:
+        ##############Andrea's code for dual simpex goes here including brians code for printing in Latex#######
+        test=True
+        while test == True:                             ####Testing for feasibility in the dual
+            for i in tableaux[(m-1)]:                    #if all the numbers in the last row are negative we are good
+                if i <= 0:
+                    test = True
+                else:
+                    test = False
+                    break
+            break
+        if test == False:
+            print "The linear program is no longer feasible in the Dual Simplex method"
+            break
+        while testdone = False:                       ####Tests if we are done with Dual Simplex algorithm
+            for i in tableaux[(n-1)]:                 #if last column is all positive then we are done
+                if i >= 0:
+                    testdone = True
+                else:
+                    testd__builtins__one = False
+                    break
+            break
+            if testdone == True:
+                    ####(Brian) print optimal information in Latex form here on the dual#####
+                    break
+
+
+
+
+
+
+

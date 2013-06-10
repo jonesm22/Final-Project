@@ -1,0 +1,154 @@
+#Melissa's code for building initial tableau
+#This chunk of code should take the arrays, A, b, c that garys code outputs, or will output
+# and turn it into one large augmented matrix.
+# I've tested it on a couple different matrices for A, b, c but feel free to try more and let me know
+# if anything is wrong. I assumed that A,b,c are arrays. Which is good, since I want to augment a 0
+# at the end b. Either way, if gary outputs matrices, I can change my code pretty easily.
+%auto
+
+import numpy as np
+
+A =Matrix([[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4]])   # These are the example matrices
+constraint = [1,2,3,4]
+c = Matrix([[1,2,3,4]])
+
+Matrix(A)
+Matrix(c)
+
+I = Matrix(np.eye(len(list(A))))   #creates the identity matrix based on the size of A
+
+czero = Matrix(np.zeros(shape=(1,len(list(c[0])))))  #creates/adds the additional zeros for the c row
+c = c.augment(czero)
+
+constraint.append(0)     #creates/adds/transposes the b matrix in prep for augmenting
+constraint = Matrix(constraint).T
+
+body = A.augment(I)   #augments the identity with A
+body = body.stack(c)   #augments A|I with c along the bottom
+tableaux = body.augment(constraint)  #augments the body with b transposed.
+tableaux
+
+######################################
+
+%auto
+#Determine which value is the pivot value.
+
+                    #assign variable for number of rows  of tableau matrix
+                    #assign variable for number of columns of tableau matrix
+m = tableaux.nrows()
+n = tableaux.ncols()
+
+#######################################
+
+%auto
+#choose pivot column based on Bland's rule of choosing left most positive value of c
+for i in range(0,n):
+    if tableaux[m-1, i] > 0:
+        pivotcolindex = i
+        break
+    else:
+        i += 1
+print "pivot column index: " + str(pivotcolindex)       #index of pivot column
+
+#######################################
+
+%auto
+#choose pivot row based on ratios
+
+pivotcol = list(tableaux[:,pivotcolindex])    #extract the pivotcol
+constraintcol = list(tableaux[:,(n-1)])       #extract the bcol
+
+pivotcol
+constraintcol
+
+ratios = []                        #calculate ratios
+for i in range((len(constraintcol)-1)):     #only calculate ratios for non-objective rows
+    if pivotcol[i] > 0:                     #makes sure we find ratio that is not dividing by 0 or dividing by a negative.
+        ratio = constraintcol[i]/pivotcol[i]
+        ratios.append(ratio)
+print "ratios are: " + str(ratios)
+
+pivotrowindex = ratios.index(min(ratios))          #find index of the minimum ratio. This is our row
+print "index of pivotrow: " + str(pivotrowindex)
+print "index of pivotcol: " + str(pivotcolindex)
+
+#########################################
+
+%auto
+#Now that we have the pivot row and pivot column, we can implement Gaussian elimination.
+
+#Find a, alpha, b
+a = pivotcol[:pivotrowindex]            #define values above pivot point, alpha
+alpha = pivotcol[pivotrowindex]         #define alpha
+alpha = alpha[0]
+b = pivotcol[pivotrowindex+1:]          #define values below pivot point, alpha
+print "a: " + str(a)
+print "alpha: " + str(alpha)
+print "b: " + str(b)
+
+##########################################
+
+%auto
+#Now Build G
+
+#building top row of G
+    aM = Matrix(a)                                      #turns a into a matrix for future augmenting
+
+if len(b) != 0:                                         #created if statement to account for when b is the empty vector because changes the structure of G
+    I_s = Matrix(identity_matrix(len(a)))               #creates matrix of zeros
+    alphaa = (-alpha**-1)*aM
+    szeros = Matrix(np.zeros(shape=(len(a), 1)))
+
+    toprow = I_s.augment(alphaa.augment(szeros))
+else:
+    I_s = Matrix(identity_matrix(len(a)))               #creates matrix of zeros
+    alphaa = (-alpha**-1)*aM
+
+    toprow = I_s.augment(alphaa.augment(szeros))
+
+#building middle row of G
+center = [alpha**-1]
+centerM = Matrix(1, 1, [center])
+middlezerosL = Matrix(np.zeros(shape=(1, len(a))))
+middlezerosR = Matrix(np.zeros(shape=(1, len(b))))
+
+middlerow = middlezerosL.augment(centerM.augment(middlezerosR))
+
+#building bottom row of G
+bM = Matrix(b)                                          #changes b from a list to a matrix to augment into bottomrow
+
+if len(a) != 0:                                         #created if statement to account for when a is the empty vector because changes G's structure
+    tzeros = Matrix(np.zeros(shape=(len(b), 1)))        #build zero matrix
+    alphab = (-alpha**-1)*bM                            #builds alpha matrix
+    I_t = Matrix(identity_matrix(len(b)))               #builds identity matrix (t X t)
+
+    bottomrow = tzeros.augment(alphab.augment(I_t))     #augments to build bottom row of G
+else:
+    alphab = (-alpha**-1)*bM                            #builds alpha matrix
+    I_t = Matrix(identity_matrix(len(b)))               #builds identity matrix (t X t)
+
+    bottomrow = alphab.augment(I_t)                     #augments to build bottom row of G
+
+if len(a) == 0:                                         #Changes the structure of G depending if a or b are the empty vector
+    G = middlerow.stack(bottomrow)
+elif len(b)== 0:
+    G = toprow.stack(middlerow)
+else:
+    G = toprow.stack(middlerow.stack(bottomrow))
+print "Gaussian elimination matrix: "
+G
+################################################
+
+#Now multiply Gaussian matrix by [a, alpha, b] to get the pivoted tableau
+
+#we don't actually need this, but left it in if we need for the tutorial output
+if len(a) == 0:                                 #rebuilds the pivot column as a matrix, and takes into consideration when a and b are the empty vectors
+    pivotcolM = centerM.stack(bM)
+elif len(b) == 0:
+    pivotcolM = aM.stack(centerM)
+else:
+    pivotcolM = aM.stack(centerM.stack(bM))
+
+tableaux = G*tableaux                      #Finds the next Tableau
+print "This is the next tableau: "
+tableaux

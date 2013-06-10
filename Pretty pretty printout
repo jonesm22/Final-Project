@@ -1,0 +1,54 @@
+︠
+########for the iterations of the DUAL
+c=tableaux[(m-1),:]
+show("A\ feasible\ solution\ of\ the\ feasible\ Dual\ is:")
+for i in range(A.nrows()):
+    y = c[:,A.ncols()+i]
+    show("y" + str(i) + " = " + str(y))
+show("The\ objective\ value\ of\ the\ feasible\ Dual\ is:")
+show((tableaux[(m-1),(n-1)])*(-1))
+
+#######for the final tableaux of the DUAL
+show("The\ optimal\ solution\ to\ the\ Dual\ is:")
+for i in range(A.nrows()):
+    y = c[:,A.ncols()+i]
+    show("y" + str(i) + " = " + str(y))
+show("The\ minimum\ objective\ value\ of\ the\ Dual\ is:")
+show((tableaux[(m-1),(n-1)])*(-1))
+
+
+########for the iterations of the PRIMAL
+numVariables = A.ncols()
+variables = var("x", "y", "z", "r")                    #this is a place holder for variables until mixed with Gary's code
+
+show("A\ feasible\ solution\ of\ the\ Primal\ is:")
+for i in range(0,numVariables):
+    if tableaux[m-1][i] == 0:                           #identify if the columns of the variables have 0 in the objective row
+        basisxcol = tableaux[:,i]                       #extract the column corresponding to x variables in the basis.
+        for j in range(0, m-1):                         #loop over basis column to identify row index of the identity, 1
+            if basisxcol[j][0] == 1:
+                show(str(variables[i]) +  " = " + str(tableaux[j][n-1]))    #find the corresponding value in the constraint column
+    else:
+        show(str(variables[i]) + " = 0")
+
+objectivevalue = -1*tableaux[m-1][n-1]
+show("The\ objective\ value\ of\ the\ feasible\ Primal\ is:")
+show(str(objectivevalue))
+
+
+
+########for the final tableaux of the PRIMAL
+numVariables = A.ncols()
+show("The\ optimal\ solution\ to\ the\ Primal\ is:")
+for i in range(0,numVariables):
+    if tableaux[m-1][i] == 0:                           #identify if the columns of the variables have 0 in the objective row
+        basisxcol = tableaux[:,i]                       #extract the column corresponding to x variables in the basis.
+        for j in range(0, m-1):                         #loop over basis column to identify row index of the identity, 1
+            if basisxcol[j][0] == 1:
+                show(str(variables[i]) +  " = " + str(tableaux[j][n-1]))    #find the corresponding value in the constraint column
+    else:
+        show(str(variables[i]) + " = 0")
+
+objectivevalue = -1*tableaux[m-1][n-1]
+show("The\ maximum\ objective\ value\ of\ the\ Primal\ is:")
+show(str(objectivevalue))

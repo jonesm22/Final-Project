@@ -1,0 +1,129 @@
+\documentclass[12pt]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\title{The Simplex Algorithm}
+\author{Andrea Gagliano, Melissa Jones, Gary Morales, Brian Purviance}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document utilizes Sage to implement George Bernard Dantzig's simplex algorithm of maximization/minimization for a given linear equation subject to specific linear constraints. Primal, and duality methods are applied as well as Bland's rule for pivoting to avoid algorithmic cycling. This is implementation in meant as a tutorial.
+\end{abstract}
+
+\section{Introduction}
+
+Dantzig's simplex algorithm is applied to systems of this type:
+\\
+The equation to manipulate (maximize/minimize) is your objective function.
+\\ $c_1 x_1 + c_2 x_2$ $=$ $y$ 
+\\subject to constraint equations; \\ 
+$a_1 x_1 + a_2 x_2$ $\leq b_1$ \\
+$a_1 x_1 + a_2 x_2$ $\leq b_2$ \\
+
+
+
+\section{Tableau}
+\label{sec:Tableau}
+
+\subsection{Initial Tableau (Primal \& Dual Methods)} 
+Primal method is described as:\\
+Objective equation ${\bf C^{T}}{\bf x}$\\
+Subject to constraints: {\bf A}{\bf x} $\leq$ $\overrightarrow{\bf b}$\\
+\\
+Dual method is described as:\\
+Objective equation ${\bf b^{T}}{\bf y}$\\
+Subject to constraints: ${\bf A^{T}}${\bf y} $\leq$ $\overrightarrow{\bf C}$\\
+\\
+When implementing the simplex algorithm, the use of a tableau (canonical) is required to process through to a solution. Its initial general set up is as follows: \\
+\\
+\begin{table}
+\caption{Primal Method}
+\centering
+\begin{tabular}{r|r|r|r}
+\label{tabular:tabl}
+0 & {\bf A} & {\bf I} & $\overrightarrow{\bf b}$ \\\hline
+-1 & ${\bf C^{T}}$ & 0 & 0 \\
+\end{tabular}
+\label{table:primal}
+\end{table}
+\\
+
+The far left column is not necessarily needed; it simply is used to maintain sign for your objective value. The final row is the most important as it tracks how your objective function matures to a feasible solution.  
+Example:
+\\
+\\
+\begin{tabular}{r|rrrr|r}
+&$x_1$&$x_2$&$x_3$&$x_4$& \\\hline
+0 & 1 & 1 & 1 & 0 & 10\\
+0 & 1 & 2 & 0 & 1 & 20\\\hline
+-1 & 5 & 3 & 0 & 0 & 0\\
+\end{tabular}
+\\
+\\
+Here our {\bf A} $=$ 
+$\begin{bmatrix}
+ 1 & 1\\ 
+ 1 & 2
+\end{bmatrix}$. And {\bf I} $=$ $
+\begin{bmatrix}
+ 1 & 0\\ 
+ 0 & 1
+\end{bmatrix}$, the equivalently sized identity matrix. $\overrightarrow{\bf b}$ $=$ 
+$\begin{bmatrix}
+ 10 & 20\\
+\end{bmatrix}$. The identity matrix then becomes your basis variables as you manipulate through the algorithm. Finally ${\bf C^{T}}$ $=$ 
+$\begin{bmatrix}
+ 5 & 3\\ 
+\end{bmatrix}$. The solution to this example tableau is:\\
+\\
+\begin{tabular}{r|rrrr|r}
+&$x_1$&$x_2$&$x_3$&$x_4$& \\\hline
+0 & 1 & 1 & 1 & 0 & 10\\
+0 & 0 & 1 & -1 & 1 & 10\\\hline
+-1 & 0 & -2 & -5 & 0 & -50\\
+\end{tabular}\\
+\\
+Here one feasible solution to this problem is:\\
+${\bf x_1}$ $=$ 10\\
+${\bf x_2}$ $=$ 0\\
+And your objective value (maximum point) is 50.\\
+\\
+Dual method implementation is similar to above. It simply starts as described in Table \ref{table:dual}
+\\
+\begin{table}
+\caption{Dual Method}
+\centering
+\begin{tabular}{r|r|r|r}
+\label{tabular:tabl}
+0 & ${\bf A^{T}}$ & {\bf I} & $\overrightarrow{\bf C}$ \\\hline
+-1 & ${\bf b^{T}}$ & 0 & 0 \\
+\end{tabular}
+\label{table:dual}
+\end{table}
+\\
+Note: Every pivot move is a feasible solution to the optimization problem however the max/min has not been reached until every value in the objective row is either a negative value or a zero.
+
+\subsection{Pivots \& Pivoting}
+When initiating the simplex algorithm, a pivot position must first be established. 
+\\
+\\
+\begin{tabular}{r|rrrr|r|r}
+&$x_1$&$x_2$&$x_3$&$x_4$& &ratios \\\hline
+0 & 1 & 1 & 1 & 0 & 10 & 10/1\\
+0 & 1 & 2 & 0 & 1 & 20 & 20/1\\\hline
+-1 & 5 & 3 & 0 & 0 & 0\\
+\end{tabular}
+\\
+Starting from this initial tableau a new column titled 'ratios,' has been created which is done by dividing the values in the column associated with greatest value in the ${\bf C^{T}}$ row by those in the $\overrightarrow{\bf b}$ . In this case it is the column associated with the ${\bf x_1}$ variable, thus defining your pivot column. The pivot position is selected from the smallest ration created. Then the task simply becomes row reducing your {\bf A} matrix to the identity (similar to inverting a matrix).\\
+Note: ratio column is only used to select your pivot position.\\
+This type of pivoting/reducing is completed when your objective function row becomes a combination of negatives and zeros. 
+
+\subsection{Bland's Rule}
+In order to ensure a feasible solution is reached, this method of anti-cycling has been implemented. Cycling happens when your tableau's objective function never transforms itself to negative and zero values. It entails simply choosing the left most column ${\bf x_1}$ to create ratios versus the $\overrightarrow{\bf b}$. Then choosing your pivot position based on the smallest ratio created. 
+
+\end{document}

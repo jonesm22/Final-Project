@@ -1,0 +1,28 @@
+#This chunk of code should take the arrays, A, b, c that garys code outputs, or will output
+# and turn it into one large augmented matrix.
+# I've tested it on a couple different matrices for A, b, c but feel free to try more and let me know 
+# if anything is wrong. I assumed that A,b,c are arrays. Which is good, since I want to augment a 0
+# at the end b. Either way, if gary outputs matrices, I can change my code pretty easily. 
+
+
+import numpy as np
+
+A =Matrix([[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4]])   # These are the example matrices 
+constraints = [1,2,3,4]
+c = Matrix([[1,2,3,4]])
+
+Matrix(A) 
+Matrix(c)
+
+I = Matrix(np.eye(len(list(A))))   #creates the identity matrix based on the size of A
+
+czero = Matrix(np.zeros(shape=(1,len(list(c[0])))))  #creates/adds the additional zeros for the c row
+c = c.augment(czero)
+
+constraints.append(0)     #creates/adds/transposes the b matrix in prep for augmenting
+constraints = Matrix(constraints).T
+
+body = A.augment(I)   #augments the identity with A
+body = body.stack(c)   #augments A|I with c along the bottom
+initialT = body.augment(constraints)  #augments the body with b transposed. 
+initialT
